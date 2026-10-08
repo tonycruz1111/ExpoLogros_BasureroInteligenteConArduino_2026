@@ -1,0 +1,99 @@
+#include <Servo.h>
+
+// -------------------------
+// Pines del sensor HC-SR04
+// -------------------------
+const int TRIG = 10;
+const int ECHO = 11;
+
+// -------------------------
+// Pines de los 4 servomotores
+// -------------------------
+const int SERVO1_PIN = 9;
+const int SERVO2_PIN = 6;
+const int SERVO3_PIN = 5;
+const int SERVO4_PIN = 3;
+
+// Crear los servos
+Servo servo1;
+Servo servo2;
+Servo servo3;
+Servo servo4;
+
+// Distancia para abrir el basurero
+const int DISTANCIA_ABRIR = 20;
+
+// Posiciones
+const int POSICION_CERRADO = 0;
+const int POSICION_ABIERTO = 90;
+
+void setup() {
+
+  // Sensor ultrasónico
+  pinMode(TRIG, OUTPUT);
+  pinMode(ECHO, INPUT);
+
+  // Conectar servos
+  servo1.attach(SERVO1_PIN);
+  servo2.attach(SERVO2_PIN);
+  servo3.attach(SERVO3_PIN);
+  servo4.attach(SERVO4_PIN);
+
+  // Comenzar con las tapas cerradas
+  servo1.write(POSICION_CERRADO);
+  servo2.write(POSICION_CERRADO);
+  servo3.write(POSICION_CERRADO);
+  servo4.write(POSICION_CERRADO);
+
+  Serial.begin(9600);
+}
+
+void loop() {
+
+  // Obtener distancia
+  long duracion;
+  int distancia;
+
+  digitalWrite(TRIG, LOW);
+  delayMicroseconds(2);
+
+  digitalWrite(TRIG, HIGH);
+  delayMicroseconds(10);
+
+  digitalWrite(TRIG, LOW);
+
+  duracion = pulseIn(ECHO, HIGH);
+
+  // Convertir tiempo a centímetros
+  distancia = duracion * 0.034 / 2;
+
+  Serial.print("Distancia: ");
+  Serial.print(distancia);
+  Serial.println(" cm");
+
+  // -------------------------
+  // Abrir las tapas
+  // -------------------------
+  if (distancia > 0 && distancia <= DISTANCIA_ABRIR) {d
+
+    servo1.write(POSICION_ABIERTO);
+    servo2.write(POSICION_ABIERTO);
+    servo3.write(POSICION_ABIERTO);
+    servo4.write(POSICION_ABIERTO);
+
+    delay(3000);
+  }
+
+  // -------------------------
+  // Cerrar las tapas
+  // -------------------------
+  else {
+
+    servo1.write(POSICION_CERRADO);
+    servo2.write(POSICION_CERRADO);
+    servo3.write(POSICION_CERRADO);
+    servo4.write(POSICION_CERRADO);
+  }
+
+  delay(100);
+}
